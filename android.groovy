@@ -69,3 +69,25 @@ sh 'make deploy-to-alpha'
 
     }
 }
+
+           stage('Publish to Google Play Beta') {
+               when {
+                   expression { return env.BRANCH_NAME =~ /^beta$/ }
+               }
+               environment {
+                   KEY_ALIAS = credentials('keyAlias')
+                   KEY_PASSWORD = credentials('keyPassword')
+                   STORE_FILE = credentials('storeFile')
+                   STORE_PASSWORD = credentials('storePassword')
+                   FASTLANE_KEY = credentials('playStoreKey')
+               }
+               steps {
+                   lock('deploy') {
+                       retry(2) {
+                           sh 'make deploy-to-beta'
+                       }
+                   }
+               }
+           }
+    }
+}
